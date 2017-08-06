@@ -1,0 +1,101 @@
+<html> 
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+<script type = "text/javascript" src = "ajaxutility.js"></script>
+<title>Employees Information</title> 
+<script>
+function getEmployee()
+{
+
+ var requestObject = false;
+ if (window.XMLHttpRequest)
+  {
+   requestObject = new XMLHttpRequest();
+   if (requestObject.overrideMimeType)
+     requestObject.overrideMimeType("text/xml");
+  }
+
+  else if (window.ActiveXObject)
+  {
+   requestObject = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  
+  if(requestObject)
+  {
+  var emplastname = document.getElementById("lname").value;
+  requestObject.open("GET", "sajja9a.php?lname=" + emplastname);
+  requestObject.onreadystatechange =
+   function()
+   {
+    if (requestObject.readyState == 4 && requestObject.status == 200)
+    {
+       xmlDocument = requestObject.responseXML;
+       addEmployee(xmlDocument.documentElement);
+       
+     }
+    }
+    requestObject.send(null);
+  }
+}
+
+function addEmployee(documentElement)
+{
+ notThere();
+
+ var nodeNames = new Array("EMPNO", "EMPFIRSTNAME", "EMPLASTNAME", "EMPPHONE", "SUPEMPNO", "EMPCOMMRATE", "EMPEMAIL");
+ var newTable = document.getElementById("emptable");
+ 
+ for(var i = 0; i < documentElement.childNodes.length; i++)
+ {
+  dataNode = documentElement.getElementsByTagName("EMPLOYEE")[i];
+  var newRow = newTable.insertRow(i+1);
+  for (var j = 0; j < nodeNames.length; j++)
+  {
+   col = newRow.insertCell(j);
+   if (dataNode.getElementsByTagName(nodeNames[j])[0].firstChild != null )
+   {
+     col.innerHTML = dataNode.getElementsByTagName(nodeNames[j])[0].firstChild.nodeValue;
+    }
+   else
+   {
+    col.innerHTML = "&nbsp;";
+   }
+  }
+ }
+}
+function notThere()
+{
+var newTable = document.getElementById("emptable");
+var length = newTable.rows.length;
+
+for (i = length-1; i >=1; i--)
+{
+newTable.deleteRow(i);
+}
+
+}
+</script>
+</head>
+<body >
+<H1 align="center">Employees Information</H1>
+<span>Employee Last Name</span>
+<input id="lname" type="text" onkeyup="getEmployee()" style="width: 200px"><p>
+<table width = "1200">
+<tbody id="emptable">
+<tr>
+	<th>EMPNO</th>
+	<th>EMPFIRSTNAME</th>
+	<th>EMPLASTNAME</th>
+	<th>EMPPHONE</th>
+	<th>SUPEMPNO</th>
+	<th>EMPCOMMRATE</th>
+        <th>EMPEMAIL</th>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
